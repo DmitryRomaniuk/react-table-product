@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM, { render } from 'react-dom';
+
 var sold_book = [
     {
         title: 'На службе зла',
@@ -102,9 +105,8 @@ var sold_book = [
         'именем Роберта Гэлбрейта.'
     }
 ];
-
-var Navbar = React.createClass({
-    render: function () {
+export default class Navbar extends React.Component {
+    render() {
         return (
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
@@ -123,13 +125,13 @@ var Navbar = React.createClass({
                     <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul className="nav navbar-nav">
                             <li className="active">
-                                <a href="#">Store <span className="sr-only">(current) </span></a>
+                                <a href="#">Магазин <span className="sr-only">(current) </span></a>
                             </li>
-                            <li><a href="#">About</a></li>
+                            <li><a href="#">О авторе</a></li>
                             <li className="dropdown">
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                                    aria-expanded="false">
-                                    Dropdown <span className="caret"></span></a>
+                                    Доп. информация <span className="caret"></span></a>
                                 <ul className="dropdown-menu" role="menu">
                                     <li><a href="#">Action</a></li>
                                     <li><a href="#">Another action</a></li>
@@ -149,20 +151,23 @@ var Navbar = React.createClass({
                                 </div>
                             </li>
                             <li>
-                                <a href="#">Link</a></li>
+                                <a href="#">Войти</a></li>
                         </ul>
                     </div>
                 </div>
             </nav>
         )
     }
-});
+};
 
-var FilterInput = React.createClass({
+export default class FilterInput extends React.Component {
+    constructor(props) {
+        super(props);
+    }
     filterTrigger() {
         this.props.filterUpdate(ReactDOM.findDOMNode(this.refs.filterInput).value);
-    },
-    render: function () {
+    };
+    render() {
         return (<form className="navbar-form navbar-left" role="search">
             <i className="fa fa-search" aria-hidden="true"></i>
             <input type='text'
@@ -173,31 +178,27 @@ var FilterInput = React.createClass({
                    onChange={this.filterTrigger}/>
         </form>)
     }
-});
+};
 
-var OneBook = React.createClass({
-    propTypes: {
+export default class OneBook extends React.Component {
+    static propTypes = {
         data: React.PropTypes.shape({
             title: React.PropTypes.string.isRequired,
             bookImg: React.PropTypes.string.isRequired,
             price: React.PropTypes.string.isRequired,
             available: React.PropTypes.bool.isRequired,
             description: React.PropTypes.string.isRequired
-        })
-    },
-    getInitialState: function () {
-        return {
-            visible: false
-        }
-    },
-    readmoreClick: function (e) {
+        })};
+    static defaultProps = { initialVisible: false };
+    state = { visible: this.props.initialVisible };
+    readmoreClick (e) {
         e.preventDefault();
         (this.state.visible) ? this.setState({visible: false}) : this.setState({visible: true});
-    },
-    addRecycle: function (e) {
+    };
+    addRecycle (e) {
         e.preventDefault();
-    },
-    render: function () {
+    };
+    render () {
         var title = this.props.data.title,
             bookImg = this.props.data.bookImg,
             price = this.props.data.price,
@@ -206,7 +207,7 @@ var OneBook = React.createClass({
             description = this.props.data.description;
 
         return (
-            <div className='article' onClick={this.readmoreClick}>
+            <div className='article' onClick={this.readmoreClick.bind(this)}>
                 <p className='book__title'>{title}: </p>
 
                 <p className='book_content'><img src={bookImg} alt={title} class="img-responsive"/></p>
@@ -224,13 +225,13 @@ var OneBook = React.createClass({
             </div>
         )
     }
-});
+};
 
-var StoreBook = React.createClass({
+export default class StoreBook extends React.Component {
     propTypes: {
         data: React.PropTypes.array.isRequired
-    },
-    render: function () {
+    };
+    render () {
 
         var input = this.props.filter.toLowerCase();
 
@@ -253,10 +254,10 @@ var StoreBook = React.createClass({
             </div>
         )
     }
-});
+};
 
-var Footer = React.createClass({
-    render: function () {
+export default class Footer extends React.Component {
+    render () {
         return (
             <footer className="container">
                 <div className="footer-about">
@@ -265,24 +266,17 @@ var Footer = React.createClass({
             </footer>
         )
     }
-});
+};
 
-
-var App = React.createClass({
-    getInitialState() {
-        return {
-            filterText: ''
-        }
-    },
-    stateUpdate(value) {
-        this.setState({
-            filterText: value
-        });
-    },
-    render: function () {
+export default class App extends React.Component{
+    static defaultProps = { initialFilterText: '' };
+    state = { filterText: this.props.initialFilterText };
+    stateUpdate(value) {this.setState({ filterText: value });
+    };
+    render () {
         return (
             <div className='app'>
-                <Navbar filterVal={this.state.filterText} filterUpdate={this.stateUpdate}/>
+                <Navbar filterUpdate={this.stateUpdate}/>
                 <StoreBook data={this.props.data} filter={this.state.filterText}/>
                 {/*<h3>Новости</h3>
                  <Add />
@@ -291,7 +285,7 @@ var App = React.createClass({
             </div>
         );
     }
-});
+};
 
 ReactDOM.render(
     <App data={sold_book}/>,
